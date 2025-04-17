@@ -1,17 +1,76 @@
-import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../Contexts/AuthContext";
 
 const Navbar = () => {
+  const { user, signOutUser } = useContext(AuthContext);
+
+  const handleSignOut = () => {
+    signOutUser()
+      .then(() => {
+        console.log("User sign out successfully");
+      })
+      .catch((err) => {
+        console.log("Error", err.message);
+      });
+  };
+
   const links = (
     <>
       <li>
-        <NavLink className={({isActive}) => `${isActive && 'text-red-500 font-medium underline'}`} to="/">Home</NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${isActive && "text-red-500 font-medium underline"}`
+          }
+          to="/"
+        >
+          Home
+        </NavLink>
       </li>
       <li>
-        <NavLink className={({isActive}) => `${isActive && 'text-red-500 font-medium underline'}`} to="/login">Login</NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${isActive && "text-red-500 font-medium underline"}`
+          }
+          to="/login"
+        >
+          Login
+        </NavLink>
       </li>
       <li>
-        <NavLink className={({isActive}) => `${isActive && 'text-red-500 font-medium underline'}`} to="/register">Register</NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `${isActive && "text-red-500 font-medium underline"}`
+          }
+          to="/register"
+        >
+          Register
+        </NavLink>
       </li>
+      {user && (
+        <>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                `${isActive && "text-red-500 font-medium underline"}`
+              }
+              to="/orders"
+            >
+              Orders
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className={({ isActive }) =>
+                `${isActive && "text-red-500 font-medium underline"}`
+              }
+              to="/profile"
+            >
+              Profile
+            </NavLink>
+          </li>
+        </>
+      )}
     </>
   );
 
@@ -49,7 +108,17 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {user ? (
+          <>
+            <span>{user?.email}</span>
+            <span className="mx-3">{user.displayName}</span>
+            <a onClick={handleSignOut} className="btn">
+              Sign Out
+            </a>
+          </>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
       </div>
     </div>
   );

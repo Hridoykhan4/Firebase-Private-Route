@@ -1,12 +1,35 @@
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../Contexts/AuthContext";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../firebase.init";
 
 const Register = () => {
+  const { createUser } = useContext(AuthContext);
+
+  const nav = useNavigate();
+
+
   const handleRegister = (e) => {
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log(email, password, name);
+    createUser(email, password)
+      .then((result) => {
+        console.log(result.user);
+        updateProfile(auth.currentUser, {
+          displayName: name
+        })
+        .then(() => {
+          console.log('Profile Updated')
+        })
+
+        e.target.reset();
+        nav('/')
+
+      })
+      .catch((err) => console.log("Error", err.message));
   };
   return (
     <div className="hero bg-base-200 min-h-[calc(100vh-65px)]">
@@ -23,6 +46,7 @@ const Register = () => {
                 type="text"
                 className="input"
                 placeholder="Enter Name"
+                required
               />
               <label className="fieldset-label">Email</label>
               <input

@@ -1,13 +1,35 @@
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../Contexts/AuthContext";
 
 const Login = () => {
+  const { signInUser, signInWithGoogle } = useContext(AuthContext);
 
-    const handleLogin = e => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        console.log(email,password)
-    }
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    signInUser(email, password)
+      .then((result) => {
+        console.log(result.user);
+        e.target.reset();
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result.user);
+        navigate("/");
+      })
+      .catch((err) => console.log(err.message));
+  };
 
   return (
     <div className="hero bg-base-200 min-h-[calc(100vh-65px)]">
@@ -19,16 +41,37 @@ const Login = () => {
           <form onSubmit={handleLogin} className="card-body pb-2">
             <fieldset className="fieldset">
               <label className="fieldset-label">Email</label>
-              <input name="email" type="email" className="input" placeholder="Email" />
+              <input
+                name="email"
+                type="email"
+                className="input"
+                placeholder="Email"
+              />
               <label className="fieldset-label">Password</label>
-              <input name="password" type="password" className="input" placeholder="Password" />
+              <input
+                name="password"
+                type="password"
+                className="input"
+                placeholder="Password"
+              />
               <div>
                 <a className="link link-hover">Forgot password?</a>
               </div>
               <button className="btn btn-neutral mt-4">Login</button>
             </fieldset>
           </form>
-          <p className="px-6 pb-4">New to this website ? Please <Link className="link" to="/register">Register.</Link></p>
+          <p className="px-6 pb-4">
+            New to this website ? Please{" "}
+            <Link className="link" to="/register">
+              Register.
+            </Link>
+          </p>
+          <button
+            onClick={handleGoogleSignIn}
+            className="mx-6 mb-2 btn block me-auto "
+          >
+            Google
+          </button>
         </div>
       </div>
     </div>
